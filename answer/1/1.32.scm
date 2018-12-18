@@ -1,0 +1,21 @@
+(define (accumulate combiner null-value term a next b)
+  (if (> a b)
+      (null-value)
+      (combiner (term a)
+                (accumulate combiner null-value term
+                            (next a) next b))))
+(define (combiner1 a b)
+  (+ a b))
+(define (null-value1)
+  0)
+(define (term1 a)
+  a)
+;(accumulate combiner1 null-value1 term1 1 inc 10)
+
+(define (accumulate-iter combiner null-value term a next b)
+  (define (iter a result)
+    (if (> a b)
+        result
+        (iter (next a) (combiner (term a) result))))
+  (iter a (null-value)))
+(accumulate-iter combiner1 null-value1 term1 1 inc 10)

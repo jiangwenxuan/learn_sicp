@@ -1,0 +1,5 @@
+(define (last-pair items)
+  (if (and (not (null? items)) (null? (cdr items)))
+      (car items)
+      (last-pair (cdr items))))
+(last-pair (list 1 2 3 4 5))

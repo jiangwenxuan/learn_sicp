@@ -1,0 +1,10 @@
+(define (same-parity x . z)
+  (let ((a (remainder x 2)))
+    (recer a z)))
+(define (recer a z)
+  (cond ((null? z) '())
+        ((= (remainder (car z) 2) a)
+         (cons (car z) (recer a (cdr z))))
+        (else
+         (recer a (cdr z)))))
+(same-parity 1 2 3 4 5 6 7)
