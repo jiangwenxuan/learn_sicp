@@ -1,3 +1,4 @@
+#lang sicp
 (define (square x)
   (* x x))
 (define (square-list-1 items)
