@@ -1,0 +1,26 @@
+#lang sicp
+
+(define (equal? a b)
+  (cond ((and (not (pair? a))
+              (not (pair? b)))
+         (eq? a b))
+        ((and (pair? a) (pair? b))
+         (and (equal? (car a) (car b))
+              (equal? (cdr a) (cdr b))))
+        (else false)))
+
+(equal? '(this is a list) '(this is a list))
+(equal? '(this is a list) '(this (is a) list))
+
+(define (new-equal? a b)
+  (cond ((and (symbol? a)
+              (symbol? b))
+         (eq? a b))
+        ((and (null? a)
+              (null? b))
+         true)
+        ((and (list? a)
+              (list? b))
+         (and (new-equal? (car a) (car b))
+              (new-equal? (cdr a) (cdr b))))
+        (else false)))

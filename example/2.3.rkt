@@ -1,0 +1,97 @@
+#lang sicp
+
+(define (memq item x)
+  (cond ((null? x) false)
+        ((eq? item (car x)) x)
+        (else (memq item (cdr x)))))
+
+;(variable? e)
+;(same-variable? a b)
+;(sum? e)
+;(addend e)
+;(augend e)
+;(make-sum a1 a2)
+;(product? e)
+;(multiplier e)
+;(multiplicand e)
+;(make-product m1 m2)
+
+(define (deriv exp var)
+  (cond ((number? exp) 0)
+        ((variable? exp)
+         (if (same-variable? exp var)
+             1
+             0))
+        ((sum? exp)
+         (make-sum (deriv (addend exp) var)
+                   (deriv (augend exp) var)))
+        ((product? exp)
+         (make-sum
+          (make-product (multiplier exp)
+                        (deriv (multiplicand exp) var))
+          (make-product (multiplicand exp)
+                        (deriv (multiplier exp) var))))
+        (else
+         (error "unknown expression type -- DERIV" exp))))
+
+(define (variable? x)
+  (symbol? x))
+
+(define (same-variable? v1 v2)
+  (and (variable? v1)
+       (variable? v2)
+       (eq? v1 v2)))
+
+(define (make-sum s1 s2)
+  (list '+ s1 s2))
+
+(define (make-product s1 s2)
+  (list '* s1 s2))
+
+(define (addend s)
+  (car (cdr s)))
+
+(define (augend s)
+  (car (cdr (cdr s))))
+
+(define (product? x)
+  (and (pair? x)
+       (eq? (car x) '*)))
+
+(define (sum? x)
+  (and (pair? x)
+       (eq? (car x) '+)))
+
+(define (multiplier p)
+  (car (cdr p)))
+
+(define (multiplicand p)
+  (car (cdr (cdr p))))
+
+(deriv '(+ x 3) 'x)
+(deriv '(* x y) 'x)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+           
