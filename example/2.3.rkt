@@ -43,10 +43,22 @@
        (eq? v1 v2)))
 
 (define (make-sum s1 s2)
-  (list '+ s1 s2))
+  (cond ((=number? s1 0) s2)
+        ((=number? s2 0) s1)
+        ((and (number? s1) (number? s2))
+         (+ s1 s2))
+        (else (list '+ s1 s2))))
+
+(define (=number? s1 s2)
+  (and (number? s1 ) (= s1 s2)))
 
 (define (make-product s1 s2)
-  (list '* s1 s2))
+  (cond ((or (=number? s1 0) (=number? s2 0)) 0)
+        ((=number? s1 1) s2)
+        ((=number? s2 1) s1)
+        ((and (number? s1) (number? s2)) (* s1 s2))
+        (else
+         (list '* s1 s2))))
 
 (define (addend s)
   (car (cdr s)))
