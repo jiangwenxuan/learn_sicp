@@ -1,6 +1,6 @@
 #lang sicp
 
-(define (lookup key table)
+(define (lookup1 key table)
   (let ((record (assoc key (cdr table))))
     (if record
         (cdr record)
@@ -12,14 +12,14 @@
         (else
          (assoc key (cdr records)))))
 
-(define (insert! key value table)
+(define (insert1! key value table)
   (let ((record (assoc key (cdr table))))
     (if record
         (set-cdr! record value)
         (set-cdr! table
                   (cons (cons key value) (cdr table))))))
 
-(define (make-table)
+(define (make-table1)
   (list '*table*))
 
 (define (lookup key-1 key-2 table)
@@ -69,7 +69,7 @@
                             (cdr local-table))))))
     (define (dispatch m)
       (cond ((eq? m 'lookup-proc) lookup)
-            ((eq? m 'insert-proc) insert)
+            ((eq? m 'insert-proc) insert!)
             (else
              (error "unknown operation -- table" m))))
     dispatch))
