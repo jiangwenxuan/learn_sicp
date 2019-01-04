@@ -1,5 +1,3 @@
-#lang sicp
-
 (define (smallest-divisor n)
   (find-divisor n 2))
 (define (divides? a b)
