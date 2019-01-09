@@ -10,7 +10,8 @@
   (cond ((> (square test-divisor) n) n)
         ((divides? n test-divisor)
          test-divisor)
-        (else (find-divisor n (next test-divisor)))))
+        (else
+         (find-divisor n (next test-divisor)))))
 
 (define (next a)
   (if (= a 2)
@@ -23,22 +24,27 @@
 ;(define (sum-primes1 a b)
 ;  (define (iter count accum)
 ;    (cond ((> count b) accum)
-;          ((prime? count) (iter (+ count 1) (+ count accum)))
+;          ((prime? count)
+;           (iter (+ count 1) (+ count accum)))
 ;          (else (iter (+ iter 1) accum))))
 ;  (iter a 0))
 ;
 ;(define (sum-primes2 a b)
-;  (accumulate + 0 (filter prime? (ecumerate-interval a b))))
+;  (accumulate + 0 (filter prime?
+;                          (ecumerate-interval a b))))
 
 (define (stream-ref s n)
   (if (= n 0)
       (stream-car s)
       (stream-ref (stream-cdr s) (- n 1))))
-(define (stream-map proc s)
-  (if (stream-null? s)
+(define (stream-map proc . argstreams)
+  (if (stream-null? (car argstreams))
       the-empty-stream
-      (cons-stream (proc (stream-car s))
-                   (stream-map proc (stream-cdr s)))))
+      (cons-stream
+       (apply proc (map stream-car argstreams))
+       (apply stream-map
+              (cons proc
+                    (map stream-cdr argstreams))))))
 (define (stream-for-each proc s)
   (if (stream-null? s)
       'done
@@ -60,7 +66,8 @@
 ;an example
 (stream-car (stream-cdr
              (stream-filter prime?
-                            (stream-enumerate-interval 10000 1000000))))
+                            (stream-enumerate-interval
+                             10000 1000000))))
 (define (stream-enumerate-interval low high)
   (if (> low high)
       the-empty-stream
@@ -70,9 +77,12 @@
 (define (stream-filter pred stream)
   (cond ((stream-null? stream) the-empty-stream)
         ((pred (stream-car stream))
-         (cons-stream (stream-car stream)
-                      (stream-filter pred (stream-cdr stream))))
-        (else (stream-filter pred (stream-cdr stream)))))
+         (cons-stream
+          (stream-car stream)
+          (stream-filter pred
+                         (stream-cdr stream))))
+        (else
+         (stream-filter pred (stream-cdr stream)))))
 
 (define-syntax delay
   (syntax-rules ()
@@ -101,10 +111,62 @@
   (cons-stream a (fibgen b (+ a b))))
 ;(define fibs (fibgen 0 1))
 
+(define (sieve stream)
+  (cons-stream
+   (stream-car stream)
+   (sieve (stream-filter
+           (lambda (x)
+             (not (divisible? x (stream-car stream))))
+           (stream-cdr stream)))))
 
+(define prime (sieve (integers-starting-from 2)))
+;(stream-ref prime 90)
 
+(define ones (cons-stream 1 ones))
+(define (add-streams s1 s2)
+  (stream-map + s1 s2))
 
+(define another-integers
+  (cons-stream 1
+               (add-streams ones another-integers)))
 
+(define fibs
+  (cons-stream 0
+               (cons-stream 1
+                            (add-streams (stream-cdr fibs)
+                                         fibs))))
+
+(define (scale-stream stream factor)
+  (stream-map (lambda (x) (* x factor)) stream))
+(define double (cons-stream 1 (scale-stream double 2)))
+(define primes
+  (cons-stream 2 (stream-filter new-prime? (integers-starting-from 3))))
+(define (new-prime? n)
+  (define (iter ps)
+    (cond ((> (square (stream-car ps)) n) true)
+          ((divisible? n (stream-car ps)) false)
+          (else (iter (stream-cdr ps)))))
+  (iter primes))
+
+;(define (sqrt-steam x)
+;  (define guesses
+;    (cons-stream 1.0
+;                 (stream-map (lambda (guess)
+;                               (sqrt-improve guess x))
+;                             guesses)))
+;  guesses)
+
+(define (partial-sums s)
+  (define result
+    (cons-stream 0 (add-streams result s)))
+  (stream-cdr result))
+
+(define (pi-summands n)
+  (cons-stream (/ 1.0 n)
+               (stream-map - (pi-summands (+ n 2)))))
+(define pi-stream
+  (scale-stream (partial-sums (pi-summands 1)) 4))
+         
 
 
 
