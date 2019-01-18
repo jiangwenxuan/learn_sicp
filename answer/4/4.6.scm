@@ -2,11 +2,11 @@
 
 (define (eval exp env)
   (cond ((let? exp)
-         (eval (let->lambda exp) env))
+         (eval (let->combination exp) env))
         (else
          (error "unknown exp" exp))))
 
-(define (let->lambda exp)
+(define (let->combination exp)
   (cons (make-lambda (let-parameters exp)
                      (let-body exp))
         (let-initials exp)))
